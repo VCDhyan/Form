@@ -31,17 +31,26 @@ jobs:
           # use npm install which is tolerant if package-lock.json is missing
           npm install
 
-      - name: Run form script (HEADLESS=true)
+      - name: Run form script and capture screenshot
         env:
           HEADLESS: 'true'
         run: |
           cd WorkLog_Submission-main
-          node index.js
+          node -e "
+          const puppeteer = require('puppeteer');
+          const fs = require('fs');
+          const originalScript = fs.readFileSync('index.js', 'utf8');
+          const modifiedScript = originalScript.replace(
+            'await browser.close();',
+            'await page.screenshot({ path: \"form-final-state.png\", fullPage: true }); await browser.close();'
+          );
+          eval(modifiedScript);
+          " || node index.js
 
       - name: Upload screenshot artifacts (if exists)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: form-screenshots
+          name: form-screenshots-${{ github.run_number }}
           path: WorkLog_Submission-main/*.png
           if-no-files-found: ignore
