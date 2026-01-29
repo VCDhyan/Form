@@ -36,9 +36,9 @@ jobs:
           HEADLESS: 'true'
         run: |
           cd WorkLog_Submission-main
-          # Create a temporary modified version that adds screenshot before browser.close()
+          # Create a temporary modified version that adds screenshot before end of try block
           cp index.js index-original.js
-          sed -i 's/await browser.close();/await page.screenshot({ path: "form-final-state.png", fullPage: true }); console.log("Screenshot captured"); await browser.close();/g' index.js
+          sed -i "s/console.log(new Date().toISOString(), 'Form fill finished');/await page.screenshot({ path: 'form-final-state.png', fullPage: true }); console.log(new Date().toISOString(), 'Screenshot captured'); console.log(new Date().toISOString(), 'Form fill finished');/g" index.js
           node index.js
           # Restore original
           mv index-original.js index.js
