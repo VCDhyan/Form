@@ -31,31 +31,17 @@ jobs:
           # use npm install which is tolerant if package-lock.json is missing
           npm install
 
-      - name: Run form script (HEADLESS=true)
+      - name: Run form script with screenshot injection
         env:
           HEADLESS: 'true'
         run: |
           cd WorkLog_Submission-main
+          # Create a temporary modified version that adds screenshot before browser.close()
+          cp index.js index-original.js
+          sed -i 's/await browser.close();/await page.screenshot({ path: "form-final-state.png", fullPage: true }); console.log("Screenshot captured"); await browser.close();/g' index.js
           node index.js
-
-      - name: Take screenshot of form result
-        if: always()
-        run: |
-          cd WorkLog_Submission-main
-          node -e "
-          const puppeteer = require('puppeteer');
-          (async () => {
-            const browser = await puppeteer.launch({ 
-              headless: true, 
-              args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-            });
-            const page = await browser.newPage();
-            await page.goto('https://forms.zohopublic.in/Kalvium/form/Signup/formperma/GeJFMLBDfoWlIJfhI46Qyx0Dlf3kHhMSRsvMItq_Riw', { waitUntil: 'networkidle2' });
-            await page.screenshot({ path: 'form-state-check.png', fullPage: true });
-            console.log('Screenshot saved to form-state-check.png');
-            await browser.close();
-          })();
-          "
+          # Restore original
+          mv index-original.js index.js
 
       - name: Upload screenshot artifacts (if exists)
         if: always()
