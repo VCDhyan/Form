@@ -21,7 +21,7 @@ async function doFill() {
   const browser = await puppeteer.launch(launchOptions);
   try {
     const page = await browser.newPage();
-    await page.goto('https://forms.zohopublic.in/Kalvium/form/Signup/formperma/GeJFMLBDfoWlIJfhI46Qyx0Dlf3kHhMSRsvMItq_Riw');
+    await page.goto('https://docs.google.com/forms/u/0/d/e/1FAIpQLSc8RRUAG8n8nPB9dm21m_MxwHQ-JuDnEj7GnvwEkWXykkKFuQ/formResponse');
 
     await page.keyboard.press('Tab');
     await page.keyboard.type('vc.dhyan.s68@kalvium.community');
